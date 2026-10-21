@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# Login-Management-System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React single-page app for account management with Firebase Authentication: sign up, log in, reset a forgotten password, view a profile, and update the account email or password.
 
-## Available Scripts
+**Status:** Working demo. The sign-up, log-in, password-reset, dashboard, profile-update and log-out flows are all wired to Firebase Auth in code, and private routes redirect signed-out users to the login page. It is not deployed from the repo, and it has no tests.
 
-In the project directory, you can run:
+## The problem
 
-### `yarn start`
+Most apps need a standard set of account screens before any real feature can be built. This project builds those screens on top of Firebase so the account flow can be reused or studied on its own.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## What it does
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **Sign up (`src/components/SignUp.js`)**: creates an account with email and password through Firebase.
+- **Log in (`src/components/Login.js`)**: signs in with email and password.
+- **Forgot password (`src/components/ForgotPassword.js`)**: sends a password reset email.
+- **Dashboard (`src/components/Dashboard.js`)**: shows the signed-in user's email and a log-out button.
+- **Update profile (`src/components/UpdateProfile.js`)**: changes the account email or password through the Firebase user object.
+- **Private routes (`src/components/PrivateRoute.js`)**: the dashboard and profile pages redirect to `/login` when no user is signed in.
 
-### `yarn test`
+## How it's built
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Frontend**: React 17 with Create React App (react-scripts 4), React Router 5 and react-bootstrap for layout and forms.
+- **Auth state**: `src/context/AuthContext.js` subscribes to `onAuthStateChanged` and exposes sign-up, sign-in, sign-out, reset and update functions through a React context. Components call `useAuth()` rather than Firebase directly.
+- **Config**: `src/firebase.js` reads the Firebase project settings from `REACT_APP_FIREBASE_*` environment variables.
+- **Decision**: one context owns the auth state and the routes stay declarative, so the screens never call Firebase themselves.
 
-### `yarn build`
+## Running it locally
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Create a `.env` file with the `REACT_APP_FIREBASE_*` values for a Firebase project that has email and password sign-in enabled, then:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm install
+npm start    # react-scripts start, with --openssl-legacy-provider
+npm run build
+npm test     # react-scripts test
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## What's left
 
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- The test libraries are installed, but there are no test files.
+- `firebase.js` reads a database URL from the environment, but the code only imports `firebase/auth`.
+- Firebase SDK v8 and react-scripts 4 are old major versions, and the start script needs `--openssl-legacy-provider` to run on current Node.
+- The Firebase config is read from environment variables, so the repo does not set up a project for you.
